@@ -1,6 +1,5 @@
 import os
 import numpy as np
-import pandas as pd
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Conv2D, MaxPooling2D, Flatten, Dense
 from tensorflow.keras.optimizers import Adam
@@ -8,6 +7,7 @@ from tensorflow.keras.losses import BinaryCrossentropy
 from tensorflow.keras.preprocessing.image import load_img, img_to_array
 from sklearn.model_selection import train_test_split
 from db import db_cursor
+from sync_sheets_to_SQL import sanitize_filename, get_youtube_title  # ⬅️ שימוש חוזר
 
 # 🔧 הגדרות
 IMG_DIR = "dataset/images"
@@ -18,7 +18,6 @@ LATEST_PATH = os.path.join(MODEL_DIR, "latest_model.h5")
 # 🎯 טען נתונים קיימים מה־DB
 def load_dataset():
     with db_cursor() as cur:
-
         cur.execute("SELECT link, goa, retro_goa, full_on, hitech, psy, darkpsy FROM tracks")
         rows = cur.fetchall()
 
@@ -27,7 +26,12 @@ def load_dataset():
 
     for row in rows:
         link, *genres = row
-        filename = link.split("v=")[-1][:11] if "youtube" in link else link.split("/")[-1]
+        title = get_youtube_title(link)
+        if not title:
+            print(f"⚠️ לא ניתן היה לקבל שם לשיר: {link}")
+            continue
+
+        filename = sanitize_filename(title)
         img_path = os.path.join(IMG_DIR, f"{filename}.png")
 
         if not os.path.exists(img_path):

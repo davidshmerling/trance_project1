@@ -21,7 +21,9 @@ os.makedirs(IMG_DIR, exist_ok=True)
 def sanitize_filename(name):
     return ''.join(c for c in name if c.isalnum() or c in (' ', '_', '-')).replace(' ', '_')[:40]
 
-# התחברות לשיטס
+def sanitize_link(link):
+    return link.split("&")[0]
+
 def get_sheet():
     scope = ['https://spreadsheets.google.com/feeds', 'https://www.googleapis.com/auth/drive']
     creds = ServiceAccountCredentials.from_json_keyfile_name('credentials.json', scope)
@@ -29,7 +31,6 @@ def get_sheet():
     sheet = client.open_by_key(SPREADSHEET_ID).get_worksheet(0)
     return sheet
 
-# קבלת שם הסרטון
 def get_youtube_title(link):
     try:
         result = subprocess.run(
@@ -41,7 +42,6 @@ def get_youtube_title(link):
         print(f"שגיאה בקבלת שם הסרטון: {e}")
         return None
 
-# הורדת שיר
 def download_audio(link, filename):
     mp3_path = os.path.join(AUDIO_DIR, f"{filename}.mp3")
     if os.path.exists(mp3_path):
@@ -62,7 +62,6 @@ def download_audio(link, filename):
         print(f"שגיאה בהורדת שיר: {e}")
         return None
 
-# ספקטרוגרמה
 def create_spectrogram(mp3_path, filename):
     try:
         y, sr = librosa.load(mp3_path, sr=None)
@@ -89,46 +88,44 @@ def create_spectrogram(mp3_path, filename):
         print(f"שגיאה ביצירת ספקטרוגרמה: {e}")
         return None
 
-# סנכרון מול SQL + הורדה + תמונה
 def sync_to_postgres():
     sheet = get_sheet()
-    data = sheet.get_all_values()[1:]  # בלי כותרות
+    data = sheet.get_all_values()[1:]
     count = 0
 
     with db_cursor(commit=True) as cursor:
         for i, row in enumerate(data):
             if count >= MAX_ROWS:
                 break
-
             if len(row) < 10 or row[9].strip().upper() == "TRUE":
                 continue
 
-            link = row[1]
-            goa = float(row[2])
-            retro_goa = float(row[3])
-            full_on = float(row[4])
-            hitech = float(row[5])
-            psy = float(row[6])
-            darkpsy = float(row[7])
+            try:
+                link = sanitize_link(row[1])
+                goa = float(row[2])
+                retro_goa = float(row[3])
+                full_on = float(row[4])
+                hitech = float(row[5])
+                psy = float(row[6])
+                darkpsy = float(row[7])
+            except (IndexError, ValueError) as e:
+                print(f"שגיאה בשורה {i+2}: {e}")
+                continue
 
-            # קבלת שם מהיוטיוב
             track_name = get_youtube_title(link)
             if not track_name:
                 print(f"שיר לא נמצא עבור: {link}")
                 continue
             filename = sanitize_filename(track_name)
 
-            # בדיקת קיום
             cursor.execute(
                 "SELECT goa, retro_goa, full_on, hitech, psy, darkpsy, voters_count FROM tracks WHERE link = %s",
                 (link,))
             result = cursor.fetchone()
 
             if result:
-                # 🟡 קיים – רק לעדכן ממוצעים
                 old_goa, old_retro, old_full, old_hitech, old_psy, old_darkpsy, voters_count = result
                 new_votes = voters_count + 1
-
                 new_goa = (old_goa * voters_count + goa) / new_votes
                 new_retro = (old_retro * voters_count + retro_goa) / new_votes
                 new_full = (old_full * voters_count + full_on) / new_votes
@@ -141,19 +138,20 @@ def sync_to_postgres():
                     SET goa = %s, retro_goa = %s, full_on = %s, hitech = %s, psy = %s, darkpsy = %s, voters_count = %s
                     WHERE link = %s
                 """, (new_goa, new_retro, new_full, new_hitech, new_psy, new_darkpsy, new_votes, link))
-
             else:
-                # 🟢 חדש – נוריד קובץ וניצור תמונה
+                mp3_path = download_audio(link, filename)
+                if not mp3_path:
+                    print(f"הורדת השיר נכשלה עבור {link}")
+                    continue
+                spectro_path = create_spectrogram(mp3_path, filename)
+                if not spectro_path:
+                    print(f"ספקטרוגרמה נכשלה עבור {filename}")
+                    continue
                 cursor.execute("""
                     INSERT INTO tracks (link, title, goa, retro_goa, full_on, hitech, psy, darkpsy, voters_count)
                     VALUES (%s, %s, %s, %s, %s, %s, %s, %s, 1)
                 """, (link, track_name, goa, retro_goa, full_on, hitech, psy, darkpsy))
 
-                mp3_path = download_audio(link, filename)
-                if mp3_path:
-                    create_spectrogram(mp3_path, filename)
-
-            # סימון שיר כסונכרן
             sheet.update_acell(f"J{i + 2}", "TRUE")
             count += 1
 
