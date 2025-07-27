@@ -10,9 +10,9 @@ from oauth2client.service_account import ServiceAccountCredentials
 from db import db_cursor
 
 # הגדרות
-AUDIO_DIR = "audio"
+AUDIO_DIR = "dataset/audio"
 IMG_DIR = "dataset/images"
-MAX_ROWS = 1
+MAX_ROWS = 50
 SPREADSHEET_ID = '1rzLtykF0OgTLBrzvGt3MnLUM5FBBhuJp2gbr1MCNRKQ'
 
 os.makedirs(AUDIO_DIR, exist_ok=True)
@@ -118,6 +118,11 @@ def sync_to_postgres():
                 continue
             filename = sanitize_filename(track_name)
 
+            mp3_path = download_audio(link, filename)
+            if not mp3_path:
+                print(f"הורדת השיר נכשלה עבור {link}")
+                continue
+
             cursor.execute(
                 "SELECT goa, retro_goa, full_on, hitech, psy, darkpsy, voters_count FROM tracks WHERE link = %s",
                 (link,))
@@ -139,10 +144,6 @@ def sync_to_postgres():
                     WHERE link = %s
                 """, (new_goa, new_retro, new_full, new_hitech, new_psy, new_darkpsy, new_votes, link))
             else:
-                mp3_path = download_audio(link, filename)
-                if not mp3_path:
-                    print(f"הורדת השיר נכשלה עבור {link}")
-                    continue
                 spectro_path = create_spectrogram(mp3_path, filename)
                 if not spectro_path:
                     print(f"ספקטרוגרמה נכשלה עבור {filename}")

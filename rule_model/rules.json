@@ -1,0 +1,170 @@
+{
+  "tempo": [
+    {
+      "min": 160,
+      "genre": "hitech",
+      "score": 0.6
+    },
+    {
+      "min": 150,
+      "genre": "forest",
+      "score": 0.5
+    },
+    {
+      "min": 148,
+      "genre": "darkpsy",
+      "score": 0.4
+    },
+    {
+      "min": 146,
+      "genre": "twilight",
+      "score": 0.5
+    },
+    {
+      "min": 145,
+      "genre": "full_on",
+      "score": 0.5
+    },
+    {
+      "min": 140,
+      "genre": "psy",
+      "score": 0.3
+    },
+    {
+      "min": 138,
+      "genre": "victory_goa",
+      "score": 0.3
+    },
+    {
+      "min": 132,
+      "genre": "melodic_goa",
+      "score": 0.2
+    },
+    {
+      "min": 130,
+      "genre": "classic_goa",
+      "score": 0.3
+    },
+    {
+      "max": 132,
+      "genre": "retro_goa",
+      "score": 0.3
+    },
+    {
+      "max": 128,
+      "genre": "psychill_downtempo",
+      "score": 0.6
+    },
+    {
+      "max": 132,
+      "genre": "suomi_finit",
+      "score": 0.3
+    }
+  ],
+  "centroid": [
+    {
+      "min": 4500,
+      "genre": "hitech",
+      "score": 0.4
+    },
+    {
+      "min": 4000,
+      "genre": "full_on",
+      "score": 0.3
+    },
+    {
+      "min": 3800,
+      "genre": "twilight",
+      "score": 0.2
+    },
+    {
+      "max": 2000,
+      "genre": "darkpsy",
+      "score": 0.4
+    },
+    {
+      "max": 1800,
+      "genre": "forest",
+      "score": 0.2
+    },
+    {
+      "max": 1800,
+      "genre": "goa",
+      "score": 0.2
+    },
+    {
+      "max": 1500,
+      "genre": "retro_goa",
+      "score": 0.4
+    },
+    {
+      "max": 1700,
+      "genre": "psychill_downtempo",
+      "score": 0.5
+    }
+  ],
+  "zcr": [
+    {
+      "min": 0.12,
+      "genre": "hitech",
+      "score": 0.3
+    },
+    {
+      "min": 0.08,
+      "genre": "forest",
+      "score": 0.3
+    },
+    {
+      "min": 0.07,
+      "genre": "suomi_finit",
+      "score": 0.3
+    },
+    {
+      "max": 0.04,
+      "genre": "retro_goa",
+      "score": 0.4
+    },
+    {
+      "max": 0.03,
+      "genre": "psychill_downtempo",
+      "score": 0.3
+    }
+  ],
+  "rms": [
+    {
+      "min": 0.06,
+      "genre": "hitech",
+      "score": 0.2
+    },
+    {
+      "min": 0.05,
+      "genre": "twilight",
+      "score": 0.2
+    },
+    {
+      "min": 0.04,
+      "genre": "full_on",
+      "score": 0.2
+    },
+    {
+      "min": 0.03,
+      "genre": "victory_goa",
+      "score": 0.2
+    },
+    {
+      "max": 0.02,
+      "genre": "retro_goa",
+      "score": 0.2
+    },
+    {
+      "max": 0.02,
+      "genre": "darkpsy",
+      "score": 0.2
+    },
+    {
+      "max": 0.015,
+      "genre": "psychill_downtempo",
+      "score": 0.3
+    }
+  ]
+}

@@ -7,17 +7,13 @@ tensorflow==2.12
 pandas
 numpy
 scikit-learn
-matplotlib
-dotenv
-psycopg2
+python-dotenv
 gspread
 oauth2client
 psycopg2-binary
 yt-dlp
 streamlit
-tensorflow
-numpy
 pillow
-librosa
-matplotlib
+
+
 

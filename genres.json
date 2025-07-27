@@ -1,0 +1,22 @@
+{
+  "Goa": [
+    { "he": "גואה קלאסי", "en": "Classic Goa" },
+    { "he": "גואה מלודי", "en": "Melodic Goa" },
+    { "he": "גואה נצחונות", "en": "Victory Goa" },
+    { "he": "גואה רטרו", "en": "Retro Goa" }
+  ],
+  "Psytrance": [
+    { "he": "פול-און", "en": "Full-on" },
+    { "he": "פרוגרסיב", "en": "Progressive" },
+    { "he": "טווילייט", "en": "Twilight" },
+    { "he": "דאונטמפו / פסיי-צ'יל", "en": "Psychill / Downtempo" },
+    { "he": "פינית / סואומי", "en": "Suomi / Finit" }
+  ],
+  "Dark": [
+    { "he": "דארקפסיי", "en": "Darkpsy" },
+    { "he": "פורסט", "en": "Forest" },
+    { "he": "הייטק", "en": "Hi-tech" },
+    { "he": "אקספרימנטל", "en": "Experimental" },
+    { "he": "זנונסק", "en": "Zenonesque" }
+  ]
+}
